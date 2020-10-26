@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>学习</title>
+    <link type="text/css" rel="stylesheet" href="css/SqQueue.css" />
+    <script src="../jquery-3.3.1.js"></script>
+    <script src="myFunction.js"></script>
+</head>
+<body>
+<div id="container">
+    <div class="theEndWrapper">
+        <div class="theEndResult">
+            <!--动态添加-->
+        </div>
+    </div>
+    <div class="tips">
+        <div class="tipContainer">
+            <h3>消耗提示或者插入机会会影响最终分数，确定吗？</h3>
+            不再提示<input type="checkbox" class="notTip"><br>
+            <input type="button" value="确定" class="yes"> <input type="button" value="取消" class="cancle">
+        </div>
+    </div>
+    <div class="notFocustips">
+        <div class="tipContainer">
+            <h3>目标编辑框未获取焦点</h3>
+        </div>
+    </div>
+    <div class="over">
+        <div class="bigPicture">
+            <div class="netxTip">
+
+            </div>
+            <canvas id="myCanvas" width="1000" height="500" style="box-shadow: 0px 0px 10px black;">
+                当前浏览器不支持 canvas
+            </canvas>
+        </div>
+        <img class="bigLeft" src="../images/bigLeft.png" alt="">
+        <img class="bigRight" src="../images/bigRight.png" alt="">
+    </div>
+    <div id="top">
+        <h1>实验二：顺序循环队列中进队和出队</h1>
+        <div class="useInfo">
+            已用时间：<span id="time"></span><span class="spacing"></span>   剩余提示个数 <span class="cueRest">12</span>  <span class="spacing"></span> 剩余自动插入个数<span class="insertRest">5</span>
+        </div>
+    </div>
+    <div class="left">
+        <ul>
+            <li>
+                <div class="title"><img src="../images/arrow_down.png" alt=""><span><strong>【实验目标】</strong></span></div>
+                <div class="content">
+                    顺序循环队列是解决假溢出的有效方法，其区分队空与队满根据实验步骤中所提供的信息，完善SqQueue.h和main.cpp两个程序文件，完成顺序循环队列数据结构（实际上就是顺序队列）的创建。完成在顺序循环队列中判空与判满的
+                </div>
+            </li>
+            <li>
+                <div class="title"><img src="../images/arrow_down.png" alt=""><strong>【实验步骤】</strong></div>
+                <div>
+                    <ul>
+                        <li>
+                            <div class="title"><img src="../images/arrow_down.png" alt="">step_1 创建SqQueue.h</div>
+                            <div class="content">
+                                <div class="readyCode"></div>
+                                <button class="actiontBtn1">创建</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title"><img src="../images/arrow_down.png" alt="">step_2 声明节点的结构类型(typedef struct)</div>
+                            <div class="content">
+                                <div class="cueContent">
+                                    参考书P92页算法
+<div class="codePanel" aim="#header">
+<br>
+typedef struct {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ElemType *queue;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int front;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int rear;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int queuesize;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int incrementsize;<br>
+}SqQueue;
+</div>
+                                    <button class="insertBtn" title="将在光标位置插入">自动插入</button>
+                                </div>
+                                <button class="cueBtn">提示</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">step_3 初始化队列Q（InitQueue_Sq，大小为10，增量为5）</div>
+                            <div class="content">
+                                <div class="cueContent">
+                                    书P93页算法3.23
+<div class="codePanel" aim="#header">
+<br>
+void InitQueue_Sq(SqQueue &Q,int maxsize=20, int 	incresize=5){<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Q.queue=(ElemType*)malloc(maxsize*sizeof(ElemType));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if(!Q.queue) exit(01);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Q.front=Q.rear=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Q.queuesize=maxsize;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Q.incrementsize=incresize;<br>
+}<br>
+</div>
+                                </div>
+                                <button class="cueBtn">提示</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title"><img src="../images/arrow_down.png" alt="">step_4 求队列长度操作（QueueLength_Sq）</div>
+                            <div class="content">
+                                <div class="cueContent">
+                                    (Q.rear - Q.front + Q.queuesize)%Q.queuesize）
+<div class="codePanel" aim="#header">
+<br>
+int QueueLength_Sq(SqQueue Q){<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return (Q.rear-Q.front+Q.queuesize)%Q.queuesize;<br>
+}
+</div>
+                                    <button class="insertBtn">自动插入</button>
+                                </div>
+                                <button class="cueBtn">提示</button>
+                            </div>
+
+                        </li>
+                        <li>
+                            <div class="title"><img src="../images/arrow_down.png" alt="">step_5 入队操作（EnQueue_Sq，将一个新元素插入到Q的尾部，成功插入则返回true，否则返回false。</div>
+                            <div class="content">
+                                <div class="cueContent">
+                                    按照书P92页“方法一”，首先判断队列是否已满，判满条件为(rear+1)%maxsize(或queuesize) = front），若已满，则重新分配空间，并判断队尾指针是否在队首指针之前，如果是，则需要扩容。然后将进队元素插入到队尾指针所指示的位置，再将队尾指针“依环状增1”，<br>
+                                    if(队满)<br>
+                                    {    //增补队列空间 <br>
+                                    if(Q.front>Q.rear) <br>
+                                    {需进行扩容： <br>
+                                    //1.将Q.front到queuesize-1之间的元素后移Q.increasementsize个位置 <br>
+                                    //2.队首指针后移Q.increasementsize个位置 <br>
+                                    //队列容量增加Q.incresementsize个位置 <br>
+                                    } <br>
+                                    //元素e插入到队尾 <br>
+                                    //队尾指针顺时针移动一个位置 <br>
+                                    } <br>
+                                    return true; <br>
+<div class="codePanel" aim="#header"><br>
+bool EnQueue_Sq(SqQueue &Q,ElemType e){<br>
+&nbsp;&nbsp;&nbsp;&nbsp;//从队尾插入元素，成功则返回true <br>
+&nbsp;&nbsp;&nbsp;&nbsp;if((Q.rear+1)%Q.queuesize==Q.front) //队满给顺序队列增补空间 <br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Q.queue=(ElemType*)realloc(Q.queue,(Q.queuesize+Q.incrementsize)*sizeof(ElemType)); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(!Q.queue) return false; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(Q.front>Q.rear)   //队首指针在队尾指针后面，重新确定位置 <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(int i=Q.queuesize;i>=Q.front;i--){<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Q.queue[i+Q.incrementsize]=Q.queue[i];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Q.front+=Q.incrementsize;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Q.queuesize+=Q.incrementsize;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Q.queue[Q.rear]=e;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Q.rear=(Q.rear+1)%Q.queuesize;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return true;<br>
+}<br>
+</div>
+                                    <button class="insertBtn">自动插入</button>
+                                </div>
+                                <button class="cueBtn">提示</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title"><img src="../images/arrow_down.png" alt="">step 6:出队操作（DeQueue_Sq，将顺序循环队列Q的队首元素删除，并用e值返回，成功删除返回true，否则返回false。）</div>
+                            <div class="content">
+                                <div class="cueContent">
+                                    判断队列是否为空，判空条件为front == rear，若为空，若非空，则先将队首元素去除，然后将队首指针“依环状增1”。
+<div class="codePanel" aim="#code">
+<br>
+bool DeQueue_Sq(SqQueue &Q,ElemType &e){<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if(Q.front==Q.rear) return false;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;e=Q.queue[Q.front];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Q.front=(Q.front+1)%Q.queuesize;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return true;<br>
+}<br>
+</div>
+                                    <button class="insertBtn">自动插入</button>
+                                </div>
+                                <button class="cueBtn">提示</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">step7: 取队首元素（GetHead_Sq）</div>
+                            <div class="content">
+                                e=Q.queue[Q.front];
+<div class="cueContent"><br>
+bool GetHead_Sq(SqQueue Q,ElemType &e){<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if(Q.front==Q.rear)  return false;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;e=Q.queue[Q.front];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return true;<br>
+}<br>
+</div>
+                                <button class="cueBtn">提示</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">Step 8:撤销循环队列操作（DestroyQueue_Sq）</div>
+                            <div class="content">
+                                free(Q.queue); Q.queuesize=0; Q.front=Q.rear=0;
+<div class="cueContent"><br>
+void DestroyQueue_Sq(SqQueue &Q){<br>
+&nbsp;&nbsp;&nbsp;&nbsp;free(Q.queue);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Q.queuesize=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Q.front=Q.rear=0;<br>
+}<br>
+</div>
+                                <button class="cueBtn">提示</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title"><img src="../images/arrow_down.png" alt="">Step 9: 创建main.cpp文件</div>
+                            <div class="content">
+                                <button class="actiontBtn2">创建</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">Step 10：写入#include文件，用用元素类型为int</div>
+                            <div class="content">
+                                <div class="cueContent" aim="#code">
+<div class="codePanel" aim="#header">
+<br>
+typedef int ElemType;<br>
+# include "stdlib.h"<br>
+# include "iostream"<br>
+# include "iomanip"<br>
+using namespace std;<br>
+# include "SqQueue.h"<br>
+</div>
+                                    <button class="insertBtn">自动插入</button>
+                                </div>
+                                <button class="cueBtn">提示</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">Step 11：创建main方法</div>
+                            <div class="content">
+                                <div class="cueContent">
+                                    提示：int main(){<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;//后续代码放在这里 <br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;return 0;<br>
+                                    }<br>
+                                </div>
+                                <button class="cueBtn">提示</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">Step12: 调用SqQueue.h中的函数初始化myqueue</div>
+                            <div class="content">
+                                <div class="cueContent">
+                                    SqQueue myqueue;
+                                </div>
+                                <button class="cueBtn">提示</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">Step13: 创建含有12个元素的数组(23, 4, 2, 45, 7, 10, 88, 34, 62, 16, 28, 40)</div>
+                            <div class="content">
+                                <div class="cueContent">
+                                    int i, x, a[]={23,4,2,45,7,10,88,34,62};
+                                </div>
+                                <button class="cueBtn">提示</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">Step14: 初始化顺序循环队列muyqueue</div>
+                            <div class="content">
+                                <div class="cueContent">
+                                    InitQueue_Sq(myQueue,10,5)
+                                </div>
+                                <button class="cueBtn">提示</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">Step15: a[0]-a[9]依次入队</div>
+                            <div class="content">
+<div class="cueContent">
+for(i=0;i<10;i++)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if(!EnQueue_Sq)(myqueue,a[i])<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{cout&lt;&lt;"入队失败"&lt;&lt;endl; return;}<br>
+</div>
+                                <button class="cueBtn">提示</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">Step16: 打印队首元素，打印队列长度, 并运行程序</div>
+                            <div class="cueContent">
+                                GetHead_Sq(myqueue) , QueueLength_Sq(myqueue)
+                            </div>
+                            <button class="cueBtn">提示</button>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">Step17：将a[10]入队，打印队首元素，打印队列长度，并运行程序</div>
+                            <div class="content">
+
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">Step18：将a[11]入队，打印队首元素，打印队列长度，并运行程序</div>
+                            <div class="content">
+
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">Step19：将a[0]-a[5]依次出队，并运行程序</div>
+                            <div class="content">
+
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">Step20：撤销队列</div>
+                            <div class="content">
+                                <div class="cueContent">
+                                    DestroyQueue_Sq(myqueue)
+                                </div>
+                                <button class="cueBtn">提示</button>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="title main"><img src="../images/arrow_down.png" alt="">step21 结束实验</div>
+                            <div class="content">
+                                <button class="settle">提交</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="leftHandle">
+
+    </div>
+    <div class="center">
+        <div class="utilBar">
+            <input type="button" value="运行" class="utilBtn run"/>
+            <input type="button" value="重做" class="utilBtn">
+            <input type="button" value="撤销" class="utilBtn">
+            <input type="button" value="A+" class="utilBtn fontSizeAdd">
+            <input type="button" value="A-" class="utilBtn fontSizeDec">
+            <select class="utilBtn">
+                <option value="a">gcc compile</option>
+                <option value="">gcc for arm</option>
+                <option value="gcc for zpu">gcc for zpu</option>
+                <option value="">gcc for avr</option>
+            </select>
+            <ul>
+                <li class="unselected">
+                    <div class="fileName">SqQueue.h</div>
+                    <div class="codediv">
+                        <textarea id="header" wrap="hard" spellcheck="false" class="editArea"></textarea>
+                    </div>
+                </li>
+                <li>
+                    <div class="fileName">main.cpp</div>
+                    <div class="codediv">
+                        <textarea id="code" spellcheck="false" wrap="hard" class="editArea"></textarea>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    <div class="centerHandle">
+
+    </div>
+    <div class="right">
+            <textarea id="result" wrap="hard" class="editArea">
+
+            </textarea>
+        <ul>
+
+        </ul>
+    </div>
+</div>
+<script src="js/SqQueue.js"></script>
+</body>
+
+</html>
